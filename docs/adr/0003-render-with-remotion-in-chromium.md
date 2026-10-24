@@ -1,0 +1,5 @@
+# Render animatics with Remotion in Chromium
+
+Each scene is exported from Excalidraw to SVG once, then animated per element inside Remotion, which drives a headless Chromium and encodes through ffmpeg. Measured on an 8-core machine at 1080p: Remotion runs ~27.5 fps against 8.5 fps on stock Chromium and 21.7 fps through Playwright CDP, because its headless shell hands raw frames back over shared memory instead of base64 PNG. At 45,000 frames for a 25-minute video that is ~28 minutes versus ~88.
+
+**Consequences.** Rendering drags in Node and a Chromium build. Remotion is free only up to 3 people, then $100/mo flat or $25/seat/mo — a licensing constraint carried by an open-source tool. `draw` is not one animation: outlines use `pathLength` dashoffset, freedraw exports as a filled path and needs prefix `d` or a clip wipe, and Arabic text cannot be dash-animated at all (RTL lines export `text-anchor="end"`), so it takes a directional clip wipe. Determinism requires pinning element seeds — rough.js derives geometry from them, and unfixed seeds produced zero identical frames across runs. See #4.
